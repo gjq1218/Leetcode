@@ -1,3 +1,4 @@
+package Goo;
 /**
  * Write a function that takes a string as input and returns the string reversed.
 
@@ -14,7 +15,7 @@ public class ReverseString {
     public String reverseString(String s) {
     	StringBuilder newStr = new StringBuilder();
     	
-    	for(int i = newStr.length() - 1; i >= 0 ; i--){
+    	for(int i = s.length() - 1; i >= 0 ; i--){
     		newStr.append(s.charAt(i));
     	}
     	
