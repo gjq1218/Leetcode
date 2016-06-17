@@ -12,7 +12,7 @@ package Goo;
 
 	
 	http://www.phperz.com/article/16/0101/178949.html
- * @author ginagao
+ * @author SirusBlack
  *
  */
 public class PaintFence {

@@ -18,7 +18,8 @@ isMatch("aa", "a*") → true
 isMatch("aa", ".*") → true
 isMatch("ab", ".*") → true
 isMatch("aab", "c*a*b") → true
- * @author ginagao
+ * @author SirusBlack
+ * 
  *
  */
 public class RegularExpressionMatching {

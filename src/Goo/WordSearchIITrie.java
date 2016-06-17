@@ -9,7 +9,7 @@ import java.util.List;
  * the word, then go back to one node. But hash you need to start with the whole word.
  *
  * TC = O (n*m (n*m))
- * @author ginagao
+ * @author SirusBlack
  *
  */
 public class WordSearchIITrie {

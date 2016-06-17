@@ -15,7 +15,7 @@ package Goo;
 	Try a long division on 4/9, the repeating part is obvious. Now try 4/333. Do you see a pattern?
 	Be wary of edge cases! List out as many test cases as you can think of and test your code thoroughly.
 
- * @author ginagao
+ * @author SirusBlack
  *
  */
 public class FractionToRecurringDecimal{

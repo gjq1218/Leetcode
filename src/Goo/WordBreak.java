@@ -10,11 +10,11 @@ import java.util.Set;
 	dict = ["leet", "code"].
 	
 	Return true because "leetcode" can be segmented as "leet code".
- * @author ginagao
+ * @author SirusBlack
  *
  */
 public class WordBreak {
-	// This is a DP quesiton.
+	// This is a DP question.
 //	possible[i] = true      if  S[0,i]在dictionary里面
 //
 //            = true      if   possible[k] == true 并且 S[k+1,j]在dictionary里面， 0<k<i

@@ -1,9 +1,11 @@
 package Template;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
+
 
 /**
 	* REFS:
@@ -38,19 +40,26 @@ import java.util.Stack;
 		b) 求二叉树中 LCA 最近公共祖先 - 有父亲节点的信息 Lowest Common Ancestor II
 		c) 求BST中 LCA 最近公共祖先
 	
-	8.求是不是same Tree/identical Tree
+	8.求两棵树是不是same Tree/identical Tree
+	  求两棵树是不是扭转后等价的二叉树 - TweakedIdenticalBinaryTree. 跟9）对称树非常相像。
 	
-	9.求是不是对称树 Symmetric， 参看same tree的思路来做。 Symmetric Binary Tree - Recursion
 	
-	10.求是不是完全二叉树 - isComplete
+	9.判断一棵树是不是对称树Symmetric，（即root的两个子树互为镜像。） 参看same tree的思路来做。 Symmetric Binary Tree - Recursion
+	 9.1 a)判断两棵树是不是互为镜像。Recursively。 跟 9.Symmetric Tree 想法一模一样。直接使用其第二个函数即可。
+	 	 b)判断两棵树是不是互为镜像。Iteratively。
+	
+	10. 求一颗二叉树的镜像：（破坏与不破坏两种情况。）
+		破坏原来的树: mirrorRec, mirror 
+		创建一颗新数：mirrorCopyRec， mirrorCopy 
+		 
+	11.求是不是完全二叉树 - isComplete
 		a) 非递归解法 Complete Binary Tree 
-		b) 递归解法 Complete Binary Tree 重要概念
-	
-	11. binary tree mirror。 
-		a) Recursively. Invert a binary tree.破坏原来的树。 递归
-		b) Iteratively. Invert a binary tree.破坏原来的树。 非递归
+		b) 递归解法 Complete Binary Tree 及复习重要概念
+ 	
+ 	12. a)由前序遍历序列和中序遍历序列重建二叉树 Recursion buildTreeFromInPre
+ 	    b) 由后序遍历序列和中序遍历序列重建二叉树 Recursion buildTreeFromInPos
 		
- * @author ginagao
+ * @author SirusBlack
 
  *
  */
@@ -619,8 +628,14 @@ public class TreeConclusion {
 	}
 
 	/**
-	 * 8.求是不是same Tree/identical Tree
-	 * 
+	 * 8.求两棵树是不是same Tree/identical Tree
+	 * 样例
+	    1             1
+	   / \           / \
+	  2   2   and   2   2
+	 /             /
+	4             4
+
 	 * @param args
 	 */
 	public boolean isIdentical(TreeNode a, TreeNode b) {
@@ -637,9 +652,44 @@ public class TreeConclusion {
 			return false;
 		}
 	}
+	
+	/**
+	 * 求两棵树是不是扭转后等价的二叉树 - TweakedIdenticalBinaryTree.
+	 * Check two given binary trees are identical or not. 
+	 * Assuming any number of tweaks are allowed. 
+	 * A tweak is defined as a swap of the children of one node in the tree.
+	 * 样例
+	    1             1
+	   / \           / \
+	  2   3   and   3   2
+	 /                   \
+	  * 
+	 */
+	 public boolean isTweakedIdentical(TreeNode a, TreeNode b) {
+	      if(a ==  null && b == null){
+	    	  return true;
+	      }else if( a != null && b != null){
+	    	 if(a.val == b.val){
+	    		return isTweakedIdentical(a.left, b.left) && isTweakedIdentical(a.right, b.right) || isTweakedIdentical(a.left, b.right) && isTweakedIdentical(a.right, b.left);
+	    	 }else{
+	    		 return false;
+	    	 }
+	      }else{
+	    	  return false;
+	      }
+	 }
+	 
 
 	/**
-	 * 9.求是不是对称树 Symmetric， 参看same tree的思路来做。 Symmetric Binary Tree - Recursion
+	 * 9.判断一棵树是不是对称树 Symmetric， 参看same tree的思路来做。 Symmetric Binary Tree - Recursion
+	 * 另一个想法是：从左到右preorder和从右到左preorder得到的sequence应该一样。但是这个想法不能用在两棵树上，因为会有反例。
+	 * 样例
+	    1
+	   / \
+	  2   2
+	 / \ / \
+	3  4 4  3
+
 	 * 
 	 * @param args
 	 */
@@ -648,7 +698,6 @@ public class TreeConclusion {
 		if (root == null) {
 			return true;
 		}
-
 		return isSymmetricRec(root.left, root.right);
 	}
 
@@ -669,7 +718,227 @@ public class TreeConclusion {
 	}
 
 	/**
-	 * 10.求是不是完全二叉树 - 非递归解法 Complete Binary Tree - Check a binary tree is completed
+	 *9.1
+	 * 判断两棵树是不是互为镜像。Recursively。 跟 9.Symmetric Tree 想法一模一样。直接使用其第二个函数即可。
+	 * 1) 根必须同时为空或者是同时不为空。
+	 * 如果根不为空，
+	 * 1）根值一样。
+	 * 2）r1的左树是r2的右树的镜像。
+	 * 3）r2的左树是r1的右树的镜像。
+	 * 
+	 */
+	
+	public boolean isMirrorRec(TreeNode p, TreeNode q) {
+		if (p == null && q == null) {
+			return true;
+		}
+		if (p == null || q == null) {
+			return false;
+		} else {
+			if (p.val == q.val) {
+				return isSymmetricRec(p.left, q.right)
+						&& isSymmetricRec(p.right, q.left);
+			} else {
+				return false;
+			}
+		}
+	}
+	
+	/**
+	 * 9.1
+	 * 判断两棵树是不是互为镜像。	Iteratively。
+	 * 1） 根必须同时为空，或是同时不为空
+     * 
+     * 如果根不为空:
+     * traversal 整个树，判断它们是不是镜像，每次都按照反向来traversal  
+     * 1）当前节点的值相等
+     * 2）当前节点的左右节点要镜像，
+     *   无论是左节点，还是右节点，对应另外一棵树的镜像位置，可以同时为空，或是同时不为空，但是不可以一个为空，一个不为空。      
+     * */
+
+	  public static boolean isMirror(TreeNode r1, TreeNode r2){  
+	        // 如果2个树都是空树
+	        if (r1 == null && r2 == null) {
+	            return true;
+	        }
+	        
+	        // 如果其中一个为空，则返回false.
+	        if (r1 == null || r2 == null) {
+	            return false;
+	        }
+	        
+	        Stack<TreeNode> s1 = new Stack<TreeNode>();
+	        Stack<TreeNode> s2 = new Stack<TreeNode>();
+	        
+	        s1.push(r1);
+	        s2.push(r2);
+	        
+	        while (!s1.isEmpty() && !s2.isEmpty()) {
+	            TreeNode cur1 = s1.pop();
+	            TreeNode cur2 = s2.pop();
+	            
+	            // 弹出的节点的值必须相等 
+	            if (cur1.val != cur2.val) {
+	                return false;
+	            }
+	            
+	            // tree1的左节点，tree2的右节点，可以同时不为空，也可以同时为空，否则返回false.
+	            TreeNode left1 = cur1.left;
+	            TreeNode right1 = cur1.right;
+	            TreeNode left2 = cur2.left;
+	            TreeNode right2 = cur2.right;
+	            
+	            if (left1 != null && right2 != null) {
+	                s1.push(left1);
+	                s2.push(right2);
+	            } else if (!(left1 == null && right2 == null)) {
+	                return false;
+	            }
+	            
+	            // tree1的左节点，tree2的右节点，可以同时不为空，也可以同时为空，否则返回false.
+	            if (right1 != null && left2 != null) {
+	                s1.push(right1);
+	                s2.push(left2);
+	            } else if (!(right1 == null && left2 == null)) {
+	                return false;
+	            }
+	        }
+	        
+	        return true;
+	    }  
+	    
+
+	/**
+	 * 10. 求一颗二叉树的镜像 递归解法 破坏原来的树 binary tree mirror。 Recursively.
+	 * Invert a binary tree.破坏原来的树。 
+	 * Example
+	  1         1
+	 / \       / \
+	2   3  => 3   2
+	   /       \
+	  4         4
+	 * @param args
+	 */
+	
+    public void invertBinaryTree(TreeNode root) {
+        // write your code here
+    	if(root == null){
+    		return ;
+    	}
+    	mirrorRec(root);
+    	
+    }
+  
+    public TreeNode mirrorRec(TreeNode root){
+    	
+    	if(root == null){
+    		return root;
+    	}
+    	
+    	TreeNode tmp = root.right;
+    	root.right = mirrorRec(root.left);
+    	root.left = mirrorRec(tmp);
+    	return root;
+    }
+    
+	/**
+	 * 求一颗二叉树的镜像 非递归解法 破坏原来的树。binary tree mirror。 Iteratively
+	 * Invert a binary tree.破坏原来的树。 
+	 *  应该可以使用任何一种Traversal 方法。 用什么顺序访问树不重要，重要的是让每一个节点的左右节点互换即可达到mirror效果。
+     *  现在可以试看看使用最简单的前序遍历。
+	 * Example
+	  1         1
+	 / \       / \
+	2   3  => 3   2
+	   /       \
+	  4         4
+	 * @param args
+	 */
+	public TreeNode mirror(TreeNode root){
+		if(root == null){
+			return null;
+		}
+		
+		Stack<TreeNode> s = new Stack<TreeNode>();
+		s.push(root);
+		
+		while(!s.isEmpty()){
+			TreeNode cur = s.pop();
+			
+			TreeNode tmp = cur.left;
+			cur.left = cur.right;
+			cur.right = tmp;
+			
+			if(cur.right != null){
+				s.push(cur.right);
+			}
+			
+			if(cur.left != null){
+				s.push(cur.left);
+			}
+
+		}
+		return root;
+	}
+	/**
+	 * 求一颗二叉树的镜像 递归解法 创建一颗新的数，不破坏原来的树。 binary tree mirror。 Recursively.
+	 * 
+	 */
+	public  TreeNode mirrorCopyRec(TreeNode root){
+		if(root == null){
+			return null;
+		}
+        // 先把左右子树分别镜像,并且把它们连接到新建的root节点。
+		TreeNode Copyroot = new TreeNode(root.val);
+		Copyroot.left = mirrorCopyRec(root.right);
+		Copyroot.right = mirrorCopyRec(root.left);		
+		return Copyroot;
+			
+	}
+    /**
+     * 求一颗二叉树的镜像 不破坏原来的树，创建一颗新的树。  binary tree mirror。 Iteratively.
+     *  应该可以使用任何一种Traversal 方法。 用什么顺序访问树不重要，重要的是让每一个节点的左右节点互换即可达到mirror效果。
+     *  现在可以试看看使用最简单的前序遍历。
+     * 
+     */
+	public  TreeNode mirrorCopy(TreeNode root){
+		if(root == null){
+			return null;
+		}
+		
+		Stack<TreeNode> s = new Stack<TreeNode>();
+		Stack<TreeNode> sCopy = new Stack<TreeNode>();
+		
+		TreeNode rootCopy = new TreeNode(root.val);
+		s.push(root);
+		sCopy.push(rootCopy);
+		
+		while(!s.isEmpty()){
+			TreeNode cur = s.pop();
+			TreeNode curCopy = sCopy.pop();
+			
+			if(cur.right != null){
+				TreeNode leftCopy = new TreeNode(cur.right.val);
+				curCopy.left = leftCopy;
+				s.push(cur.right);
+				sCopy.push(curCopy.left);
+			}
+			
+			if(cur.left != null){
+				TreeNode rightCopy = new TreeNode(cur.left.val);
+				curCopy.right = rightCopy;
+				s.push(cur.left);
+				sCopy.push(curCopy.right);
+			}
+			
+		}
+		return root;
+
+	}
+	
+
+	/**
+	 * 11.求是不是完全二叉树 - 非递归解法 Complete Binary Tree - Check a binary tree is completed
 	 * or not. Definition: A complete binary tree is a binary tree that every
 	 * level is completed filled except the deepest level. In the deepest level,
 	 * all nodes must be as left as possible. 思路： 进行level traversal,
@@ -796,80 +1065,98 @@ public class TreeConclusion {
 		}
 		return new ResultTypeCBT(-1, false, false);
 	}
-
 	/**
-	 * 11. binary tree mirror。 Recursively.
-	 * Invert a binary tree.破坏原来的树。 递归
-	 * Example
-	  1         1
-	 / \       / \
-	2   3  => 3   2
-	   /       \
-	  4         4
-	 * @param args
+	 * 12. a)由前序遍历序列和中序遍历序列重建二叉树
+	 * Given preorder and inorder traversal of a tree, construct the binary tree.
+	 * We assume that there is no duplicate in the trees.
+     *  For example:
+     *          1
+     *         / \
+     *        2   3
+     *       /\    \
+     *      4  5    6
+     *              /\
+     *             7  8  
+     *             
+     *  PreOrder should be: 1   2 4 5   3 6 7 8
+     *                      根   左子树    右子树  
+     *  InOrder should be:  4 2 5   1   3 7 6 8
+     *                       左子树  根  右子树
+	 * 从PreOrder来确定根，再从中序遍历来将序列分成左右子树。进行递归。算法最终相当于一次树的遍历，每个结点只会被访问一次，所以时间复杂度是O(n)。
+		http://blog.csdn.net/linhuanmars/article/details/24389549	
 	 */
-	
-    public void invertBinaryTree(TreeNode root) {
-        // write your code here
-    	if(root == null){
-    		return ;
-    	}
-    	mirrorRec(root);
-    	
-    }
-  
-    public TreeNode mirrorRec(TreeNode root){
-    	
-    	if(root == null){
-    		return root;
-    	}
-    	
-    	TreeNode tmp = root.right;
-    	root.right = mirrorRec(root.left);
-    	root.left = mirrorRec(tmp);
-    	return root;
-    }
-    
-	/**
-	 * binary tree mirror。Iteratively
-	 * Invert a binary tree.破坏原来的树。 非递归
-	 *  应该可以使用任何一种Traversal 方法。 用什么顺序访问树不重要，重要的是让每一个节点的左右节点互换即可达到mirror效果。
-     *  现在可以试看看使用最简单的前序遍历。
-	 * Example
-	  1         1
-	 / \       / \
-	2   3  => 3   2
-	   /       \
-	  4         4
-	 * @param args
-	 */
-	public TreeNode mirror(TreeNode root){
-		if(root == null){
-			return null;
-		}
-		
-		Stack<TreeNode> s = new Stack<TreeNode>();
-		s.push(root);
-		
-		while(!s.isEmpty()){
-			TreeNode cur = s.pop();
-			
-			TreeNode tmp = cur.left;
-			cur.left = cur.right;
-			cur.right = tmp;
-			
-			if(cur.right != null){
-				s.push(cur.right);
-			}
-			
-			if(cur.left != null){
-				s.push(cur.left);
-			}
-
-		}
-		return root;
-	}
-    
-    
-  	
+	 public TreeNode buildTreeFromInPre(int[] preorder, int[] inorder) {
+	        if(preorder == null || inorder == null){
+	        	return null;
+	        }
+	        //Hashmap 用于中序数组中，根据根找到对应的下标。用来区分左右子树所在位置。
+	        HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+	        for(int i = 0; i < inorder.length; i++){
+	        	map.put(inorder[i], i);
+	        }
+	        
+	        return helperFromInPre(preorder, 0, preorder.length - 1, inorder, 0, inorder.length - 1, map);
+	   }
+	 
+	 public TreeNode helperFromInPre(int[] preorder, int preL, int preR, int[] inorder, int inL, int inR, HashMap<Integer, Integer> map){
+		 if(preL > preR || inL > inR){
+			 return null;
+		 }
+		 TreeNode root = new TreeNode(preorder[preL]);	 
+		 int index = map.get(root.val);
+		 root.left = helperFromInPre(preorder, preL + 1, preL + index - inL, inorder, inL, index - 1, map);
+		 root.right = helperFromInPre(preorder, preL + index - inL + 1,preR, inorder, index + 1, inR, map);
+		 return root;
+		 
+	 }
+	 
+	 /**
+		 * 12. b) 由后序遍历序列和中序遍历序列重建二叉树
+		 * Given postorder and  traversal of a tree, construct the binary tree.
+		 * We assume that there is no duplicate in the trees.
+	      * We assume that there is no duplicate in the trees.
+	     *  For example:
+	     *          1
+	     *         / \
+	     *        2   3
+	     *       /\    \
+	     *      4  5    6
+	     *              /\
+	     *             7  8  
+	     *             
+	     *  PostOrder should be: 4 5 2   7 8 6 3    1
+	     *                      左子树    右子树      根   
+	     *  InOrder should be:  4 2 5   1   3 7 6 8
+	     *                       左子树  根  右子树
+	     *                       
+	     *                       
+	     *思路根由中序和前序遍历得到二叉树很相像。注意递归时候下标的计算容易出错。
+		 * 从 PostOrder来确定根，再从中序遍历来将序列分成左右子树。进行递归。算法最终相当于一次树的遍历，每个结点只会被访问一次，所以时间复杂度是O(n)。
+			http://blog.csdn.net/linhuanmars/article/details/24389549	
+		 */
+	 public TreeNode buildTreeFromInPos(int[] inorder, int[] postorder) {
+	       if(inorder == null || postorder == null){
+	    	   return null;
+	       }
+	       HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
+	       
+	       for(int i = 0; i < inorder.length; i++){
+	    	   map.put(inorder[i], i);
+	       }
+	       return helperFromInPos(inorder, 0, inorder.length - 1, postorder, 0, postorder.length - 1, map);
+	   }
+	  public TreeNode helperFromInPos(int[] inorder,int inL, int inR, int[] postorder, int posL, int posR, HashMap<Integer, Integer> map){
+		  if(inL > inR || posL > posR){
+			  return null;
+		  }
+		  
+		  TreeNode root = new TreeNode(postorder[posR]);
+		  
+		  int index = map.get(root.val);  
+		  root.left = helperFromInPos(inorder, inL, index - 1, postorder, posL, posL + index - inL - 1, map);
+		  root.right = helperFromInPos(inorder, index + 1, inR, postorder, posL + index - inL, posR - 1, map);
+		  
+		  return root;
+		  
+	  }
 }

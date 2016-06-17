@@ -22,7 +22,7 @@ The "Zigzag" order is not clearly defined and is ambiguous for k > 2 cases. If "
 [8,9]
 It should return [1,4,8,2,5,9,3,6,7].
  * 考察iterator
- * @author ginagao
+ * @author SirusBlack
  *
  */
 public class ZigzagIterator {

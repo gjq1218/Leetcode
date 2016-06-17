@@ -21,7 +21,7 @@ import java.util.List;
 	Note:
 	You may assume that all inputs are consist of lowercase letters a-z.
  * 
- * @author ginagao
+ * @author SirusBlack
  *
  */
 public class WordSearchII {

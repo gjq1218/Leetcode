@@ -1,4 +1,4 @@
-package bstDivideConquerLintcode;
+package BstAndDivideConquerLintcode;
 /**
  * Given a binary search tree (See Definition) and a node in it, find the in-order successor of that node in the BST.
 
@@ -20,7 +20,7 @@ Given tree = [2,1,3] and node = 2:
 
 return node 3.
 
- * @author ginagao
+ * @author SirusBlack
  *
  */
 public class InorderSuccessorinBinarySearchTree {

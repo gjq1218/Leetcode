@@ -8,7 +8,7 @@ package Goo;
 	Show Tags
 	Show Similar Problems
 
- * @author ginagao
+ * @author SirusBlack
  *
  */
 public class ReverseString {

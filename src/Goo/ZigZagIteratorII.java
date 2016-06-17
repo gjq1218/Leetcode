@@ -16,7 +16,7 @@ import java.util.Queue;
 	[4,5,6,7]
 	[8,9]
 	Return [1,4,8,2,5,9,3,6,7]
- * @author ginagao
+ * @author SirusBlack
  *
  */
 public class ZigZagIteratorII {

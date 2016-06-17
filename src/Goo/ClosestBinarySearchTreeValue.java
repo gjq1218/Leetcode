@@ -7,7 +7,7 @@ package Goo;
 	You are guaranteed to have only one unique value in the BST that is closest to the target.
  *  https://segmentfault.com/a/1190000003797291
  *  根据二叉树的性质，我们知道当遍历到某个根节点时，最近的那个节点要么是在子树里面，要么就是根节点本身。所以我们根据这个递归，返回子树中最近的节点，和根节点中更近的那个就行了。
- * @author ginagao
+ * @author SirusBlack
  *
  */
 

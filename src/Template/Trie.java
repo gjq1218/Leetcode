@@ -8,7 +8,7 @@ import java.util.HashMap;
  * 2. trie树还可以查找前缀。
  * 3.时间复杂度：hash 和 trie 相等。hash扫面一个单词利用hash function得到hashcode还是需要遍历那个单词O(len), 平常是指O(1)是指O（1）个单词。而查找 trie也是（1）个单词的复杂度。
  * 
- * @author ginagao
+ * @author SirusBlack
  *
  */
 
