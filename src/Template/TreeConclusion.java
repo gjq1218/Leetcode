@@ -1,6 +1,7 @@
 package Template;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -15,8 +16,8 @@ import java.util.Stack;
 	* http://zisong.me/post/suan-fa/ren-nao-li-jie-di-gui
 	* https://github.com/yuzhangcmu/LeetCode/blob/master/tree/TreeDemo.java
 	
-	1.非递归遍历：前序遍历 preorderTraversal， 中序遍历 inorderTraversal， 后序遍历 2个方法：a) 正着想 postorderTraversal b)利用从右到左前序遍历的逆序。postorderTraversal2
-	  分层遍历 迭代法 levelTraversal
+	1.非递归遍历：前序遍历 preorderTraversal， 中序遍历 inorderTraversal， 后序遍历 2个方法：a) 正着想-postorderTraversal b)利用从右到左前序遍历的逆序。- postorderTraversal2
+	  分层遍历二叉树 从顶向下输出 迭代法 levelTraversal。  分层遍历二叉树 从底向上数输出 迭代法 levelOrderBottom
 	  递归遍历：前序遍历 preorderTraversalRec，中序遍历 inorderTraversalRec， 后序遍历 postorderTraversalRec。
 	
 	2.求二叉树中的结点个数 - 递归 getNodeNumRec
@@ -57,7 +58,18 @@ import java.util.Stack;
 		b) 递归解法 Complete Binary Tree 及复习重要概念
  	
  	12. a)由前序遍历序列和中序遍历序列重建二叉树 Recursion buildTreeFromInPre
- 	    b) 由后序遍历序列和中序遍历序列重建二叉树 Recursion buildTreeFromInPos
+ 	    b)由后序遍历序列和中序遍历序列重建二叉树 Recursion buildTreeFromInPos
+ 	    
+ 	13. 求二叉树第k层的节点个数：
+ 		a)迭代 getNodeNumKthLevel 
+ 		b)递归 getNodeNumKthLevelRec
+ 	
+ 	14. 求二叉树中的节点个数
+ 		a)递归 getNodeNumLeafRec 把左子数和右子树的叶子节点加在一起即可 当是叶子节点的时候返回1.别的返回零。
+ 		b)迭代 getNodeNumLeaf 随便使用一种遍历方法都可以，比如，中序遍历。inorderTraversal，判断是不是叶子节点。
+ 	
+ 	15. BinaryTreeZigzaLevelOrderTraversal。 使用两个栈来更新现在这一层。
+ 	
 		
  * @author SirusBlack
 
@@ -260,7 +272,43 @@ public class TreeConclusion {
   		}
   		return res;
   	}
-  
+  	/**
+  	 * 分层遍历二叉树（按层次从下到上，从左往右）迭代 最简单的方法就是从上到下输出完以后，reverse这个link，与上题基本一致。
+  	 * Level-Order - which is actually BFS - use queue.
+  	 * 宽度优先搜索，使用队列。队列初始化，将根节点压入栈，当队列不为空时：
+  	 * 弹出一个节点，访问，若子节点或者右节点不为空，压入栈。
+  	 */ 
+  	
+	public ArrayList<ArrayList<Integer>> levelOrderBottom(TreeNode root) {
+		ArrayList<ArrayList<Integer>> res = new ArrayList<>();
+		if (root == null) {
+			return res;
+		}
+
+		Queue<TreeNode> queue = new LinkedList<TreeNode>();
+		queue.offer(root);
+		
+		while (!queue.isEmpty()) {
+			int size = queue.size();
+
+			ArrayList<Integer> level = new ArrayList<Integer>();
+			for (int i = 0; i < size; i++) {
+				TreeNode head = queue.poll();
+				level.add(head.val);
+				if (head.left != null) {
+					queue.offer(head.left);
+				}
+				if (head.right != null) {
+					queue.offer(head.right);
+				}
+			}
+			res.add(level);
+		}
+		Collections.reverse(res);
+		return res;
+	}
+  	
+  	
   	/**
   	 * 前序递归遍历
   	 * **/
@@ -1159,4 +1207,177 @@ public class TreeConclusion {
 		  return root;
 		  
 	  }
+	  
+	  /**
+		 * 13. a) 求二叉树第k层的节点个数：迭代：getNodeNumKthLevel  递归：getNodeNumKthLevelRec
+		 *  getNodeNumKthLevel： 建一个dummynode用来做分层的间隔使用。
+		 * 
+		 */
+	  
+		public static int getNodeNumKthLevel(TreeNode root, int k) {
+			if (root == null || k < 0) {
+				return 0;
+			}
+
+			int level = 0;
+
+			Queue<TreeNode> q = new LinkedList<TreeNode>();
+			q.offer(root);
+
+			TreeNode dummy = (new TreeConclusion()).new TreeNode(0);
+			int cnt = 0; // record the size of the level.
+
+			q.offer(dummy);
+
+			while (!q.isEmpty()) {
+				TreeNode node = q.poll();
+
+				if (node == dummy) {
+					level++;
+					if (level == k) {
+						return cnt;
+					}
+					cnt = 0;// reset the cnt;
+					if (q.isEmpty()) {
+						break;
+					}
+					q.offer(dummy);
+					continue;
+				}
+				cnt++;
+				if (node.left != null) {
+					q.offer(node.left);
+				}
+				if (node.right != null) {
+					q.offer(node.right);
+				}
+			}
+			return 0;
+		}
+		
+		/**
+		 * 13. b) 求二叉树第k层的节点个数：递归：getNodeNumKthLevelRec
+		 **/
+		public static int getNodeNumKthLevelRec(TreeNode root, int k) {
+			if (root == null || k < 0) {
+				return 0;
+			}
+			if (k == 1) {
+				return 1;
+			}
+			return getNodeNumKthLevelRec(root.left, k - 1) + getNodeNumKthLevelRec(root.right, k - 1);
+		}
+		
+		/**
+		 * 14 a) 求二叉树中的结点个数 递归： getNodeNumLeafRec
+		 * 
+		 */
+		public static int getNodeNumLeafRec(TreeNode root) {
+			if (root == null) {
+				return 0;
+			}
+			if (root.left == null && root.right == null) {
+				return 1;
+			}
+			return getNodeNumLeafRec(root.left) + getNodeNumLeafRec(root.right);
+		}
+		
+
+
+		/**
+		 * 14 b) 求二叉树中的结点个数 迭代： getNodeNumLeaf - 随便使用一种遍历方法都可以，比如，中序遍历。 inorderTraversal，判断是不是叶子节点。
+		 * 
+		 */
+		public static int getNodeNumLeaf(TreeNode root) {
+				if (root == null) {
+					return 0;
+				}
+				int cnt = 0;
+				// we can use inorderTraversal traversal to do it
+
+				Stack<TreeNode> s = new Stack<TreeNode>();
+				TreeNode cur = root;
+
+				while (true) {
+					while (cur != null) {
+						s.push(cur);
+						cur = cur.left;
+					}
+
+					if (s.isEmpty()) {
+						break;
+					}
+
+					cur = s.pop();
+
+					if (cur.left == null && cur.right == null) {
+						cnt++;
+					}
+					cur = cur.right;
+				}
+				return cnt;
+			}
+		
+		/**
+		 * 	15. BinaryTreeZigzaLevelOrderTraversal。 使用两个栈来更新现在这一层。
+		 * Given binary tree [3,9,20,null,null,15,7],
+			    3
+			   / \
+			  9  20
+			    /  \
+			   15   7
+			return its zigzag level order traversal as:
+			[
+			  [3],
+			  [20,9],
+			  [15,7]
+			]
+		*/
+	 	
+		public ArrayList<ArrayList<Integer>> zigzagLevelOrder(TreeNode root) {
+
+			ArrayList<ArrayList<Integer>> res = new ArrayList<ArrayList<Integer>>();
+			if (root == null) {
+				return res;
+			}
+			Stack<TreeNode> currLevel = new Stack<TreeNode>();
+			Stack<TreeNode> nextLevel = new Stack<TreeNode>();
+			Stack<TreeNode> tmp;
+			boolean normalOrder = true;
+
+			currLevel.push(root);
+			while (!currLevel.isEmpty()) {
+				ArrayList<Integer> oneres = new ArrayList<Integer>();
+
+				while (!currLevel.isEmpty()) {
+					TreeNode cur = currLevel.pop();
+					oneres.add(cur.val);
+
+					if (normalOrder) {
+						if (cur.left != null) {
+							nextLevel.push(cur.left);
+						}
+
+						if (cur.right != null) {
+							nextLevel.push(cur.right);
+						}
+					} else {
+						if (cur.right != null) {
+							nextLevel.push(cur.right);
+						}
+
+						if (cur.left != null) {
+							nextLevel.push(cur.left);
+						}
+					}
+				}
+				res.add(oneres);
+				tmp = currLevel;
+				currLevel = nextLevel;
+				nextLevel = tmp;
+				normalOrder = !normalOrder;
+			}
+			return res;
+		}
+
 }
