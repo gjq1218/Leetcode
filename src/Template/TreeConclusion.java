@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 
@@ -37,6 +38,7 @@ import BstAndDivideConquerLintcode.test.TreeNode;
 	5. 求二叉树路径最大和  
 		a) maxPathSum - Any to Any node. 
 		b) maxPathSum2 - Root to Any node
+		c) BinaryTreePathSum 求路径和刚好等于target的所有路径
 	
 	6.有效二叉搜索树 Validate Binary Search Tree - Divide and Conquer
 	
@@ -479,7 +481,8 @@ public class TreeConclusion {
 	}
 
 	/**
-	 * 5.求二叉树路径最大和。Any to Any node. Binary Tree Maximum Path Sum Important
+	 * 5.求二叉树路径最大和。
+	 * Any to Any node. Binary Tree Maximum Path Sum Important
 	 * question to understand divide and conquer!!!!!!!!!! Given a binary tree,
 	 * find the maximum path sum. The path may start and end at any node in the
 	 * tree.
@@ -529,7 +532,8 @@ public class TreeConclusion {
 	}
 
 	/**
-	 * 求二叉树路径最大和。Root to Any node. Binary Tree Maximum Path Sum II Given a
+	 * 求二叉树路径最大和。
+	 * Root to Any node. Binary Tree Maximum Path Sum II Given a
 	 * binary tree, find the maximum path sum from root.
 	 * 
 	 * @param args
@@ -547,7 +551,66 @@ public class TreeConclusion {
 			return Math.max(left, right) + root.val;
 		}
 	}
-
+	
+	/**
+	 * c) BinaryTreePathSum 求路径和刚好等于target的所有路径
+	 * Given a binary tree, and target = 5:
+			     1
+			    / \
+			   2   4
+			  / \
+			 2   3
+			return
+			
+			[
+			  [1, 2, 2],
+			  [1, 4]
+			]
+	 * 
+	 */
+		
+	 public List<List<Integer>> binaryTreePathSum(TreeNode root, int target) {
+	        List<List<Integer>>  res = new ArrayList<List<Integer>>();
+	        
+	        if(root == null){
+	            return res;
+	        }
+	        
+	        List<Integer> path = new ArrayList<Integer>();
+	        path.add(root.val);
+	        helper(path, res, root, root.val, target);
+	        return res;
+	        
+	    }
+	    
+	    public void helper(List<Integer> path, List<List<Integer>>  res, TreeNode root,int sum, int target){
+	        
+	        
+	        // meat leaf
+	        if(root.left == null && root.right == null){
+	            if(sum == target){
+	                res.add(new ArrayList<Integer>(path));
+	            }
+	            return;
+	        }
+	        
+	        // go to left
+	        
+	        if(root.left != null){
+	            path.add(root.left.val);
+	            helper(path, res, root.left, sum + root.left.val, target);
+	            path.remove(path.size() - 1);
+	            
+	        }
+	        // go to right
+	        if(root.right != null){
+	            path.add(root.right.val);
+	            helper(path, res, root.right, sum + root.right.val, target);
+	            path.remove(path.size() - 1);
+	        }
+	    }
+	
+	
 	/**
 	 * 6.有效二叉搜索树 Validate Binary Search Tree Divide and Conquer
 	 * 
