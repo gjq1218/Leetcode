@@ -1,11 +1,15 @@
 package Template;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Stack;
+
+import BstAndDivideConquerLintcode.test.TreeNode;
 
 
 /**
@@ -69,6 +73,8 @@ import java.util.Stack;
  		b)迭代 getNodeNumLeaf 随便使用一种遍历方法都可以，比如，中序遍历。inorderTraversal，判断是不是叶子节点。
  	
  	15. BinaryTreeZigzaLevelOrderTraversal。 使用两个栈来更新现在这一层。
+ 	16. BinaryTreeSerialization 二叉树的序列化。 序列化很简单，我们只能用前序遍历或者分层遍历，因为中序和后序不能分辨出根节点。关键是 deserialize的部分。
+		i) 使用分层遍历。ii)前序遍历
  	
 		
  * @author SirusBlack
@@ -1380,4 +1386,118 @@ public class TreeConclusion {
 			return res;
 		}
 
+		/**
+		 * 16. BinaryTreeSerialization 二叉树的序列化.
+		 * 序列化很简单，我们只能用前序遍历或者分层遍历，因为中序和后序不能分辨出根节点。关键是deserialize的部分。
+		 * i) 使用分层遍历。ii)前序遍历
+		 * An example of testdata: Binary tree {3,9,20,#,#,15,7}, denote the following structure:
+
+			  3
+			 / \
+			9  20
+			  /  \
+			 15   7
+			 Our data serialization use bfs traversal. This is just for when you got wrong answer and want to debug the input.
+		 */
+		 // i) 使用分层遍历。
+
+		 public String serialize(TreeNode root) {
+				if(root == null){
+					return "{}";
+				}
+				// use BFS
+			
+				StringBuilder sb = new StringBuilder();
+				sb.append("{");
+				Queue<TreeNode> queue = new LinkedList<TreeNode>();
+				queue.add(root);
+				
+				while(!queue.isEmpty()){
+					
+					TreeNode cur = queue.poll();
+					
+					if(cur == null){
+						sb.append("#" + ",");
+					}else{
+						sb.append(cur.val + ",");
+						queue.offer(cur.left);
+						queue.offer(cur.right);
+						
+					}	
+				}
+				sb.deleteCharAt(sb.length() - 1);
+				sb.append("}");
+				return sb.toString();
+
+			 }
+			 
+		    public TreeNode deserialize(String data) {
+		    	if(data.equals("{}")){
+		    		return null;
+		    	}
+		    	String[] vals = data.substring(1, data.length() - 1).split(",");
+		    	ArrayList<TreeNode> queue = new ArrayList<TreeNode>();
+		    	TreeNode root = new TreeNode(Integer.parseInt(vals[0]));
+		    	
+		    	queue.add(root);
+		    	
+		    	int index = 0;
+		    	boolean isLeftChild = true;
+		    	
+		    	for(int i = 1; i < vals.length; i++){
+		    		if(!vals[i].equals("#")){
+		    			TreeNode node = new TreeNode(Integer.parseInt(vals[i]));
+		    			if(isLeftChild){
+		    				queue.get(index).left = node;
+		    			}else{
+		    				queue.get(index).right = node;
+		    			}
+		    			queue.add(node);
+		    		}
+		    		
+		    		// 这里意思是只有不是左孩子了，以为着下一层要开始了。
+		    		if(!isLeftChild){
+		    			index++;
+		    		}
+		    		isLeftChild = !isLeftChild;
+		    	}
+		    	return root;
+		    }
+		    
+		    // ii) 使用前序遍历。 递归解法；
+		    
+		    public String serialize2(TreeNode root){
+		    	StringBuilder sb = new StringBuilder();
+		    	buildString(root, sb);
+		    	return sb.toString();
+		    }
+		    private void buildString(TreeNode node, StringBuilder sb){
+		    	if(node == null){
+		    		sb.append("#").append(",");
+		    	}else{
+		    		sb.append(node.val).append(",");
+		    		buildString(node.left, sb);
+		    		buildString(node.right, sb);
+		    	}
+		    }
+		    // Decodes your encoded data to tree.
+		    public TreeNode deserialize2(String data){
+		    	Deque<String> nodes = new LinkedList<>();
+		    	nodes.addAll(Arrays.asList(data.split(",")));
+		    	return buildTree(nodes);
+		    }
+		    
+		    private TreeNode buildTree(Deque<String> nodes){
+		    	String val = nodes.remove();
+		    	if(val.equals("#")){
+		    		return null;
+		    	}else{
+		    		TreeNode node = new TreeNode(Integer.valueOf(val));
+		    		node.left = buildTree(nodes);
+		    		node.right = buildTree(nodes);
+		    		return node;
+		    	}
+	
+		    }
+		    
 }
