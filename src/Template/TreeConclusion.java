@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Stack;
 
-import BstAndDivideConquerLintcode.test.TreeNode;
+import BstAndDivideConquerLintcode.BalancedBinaryTree.TreeNode;
+
 
 
 /**
@@ -46,6 +47,7 @@ import BstAndDivideConquerLintcode.test.TreeNode;
 		a) 没有父亲节点的信息 lowestCommonAncestor
 		b) 求二叉树中 LCA 最近公共祖先 - 有父亲节点的信息 Lowest Common Ancestor II
 		c) 求BST中 LCA 最近公共祖先
+		d) 由LCA问题可以引出一个新问题：找到BT中的两点距离。Find distance between two given keys of a Binary Tree
 	
 	8.求两棵树是不是same Tree/identical Tree
 	  求两棵树是不是扭转后等价的二叉树 - TweakedIdenticalBinaryTree. 跟9）对称树非常相像。
@@ -78,7 +80,11 @@ import BstAndDivideConquerLintcode.test.TreeNode;
  	16. BinaryTreeSerialization 二叉树的序列化。 序列化很简单，我们只能用前序遍历或者分层遍历，因为中序和后序不能分辨出根节点。关键是 deserialize的部分。
 		i) 使用分层遍历。ii)前序遍历
  	
-		
+	17. Flatten Binary Tree to Linked List
+	18. Binary Tree Inorder Successor. 二叉树查找树中序后继
+		a)有root 没有parent属性
+		b)右parent，只要找parent中比p大的值大的点就行。
+	
  * @author SirusBlack
 
  *
@@ -613,9 +619,12 @@ public class TreeConclusion {
 	
 	/**
 	 * 6.有效二叉搜索树 Validate Binary Search Tree Divide and Conquer
+	 * a) divide and Conquer
+	 * b) another way
 	 * 
 	 * @param args
 	 */
+	 //a) divide and conquer
 	public class ResultTypeVBST {
 		boolean is_bst;
 		int maxValue;
@@ -656,9 +665,35 @@ public class TreeConclusion {
 				Math.min(root.val, left.minValue));
 
 	}
+	
+	//b) another way
+		public boolean isValidBST2(TreeNode root) {
+			
+			if(root == null){
+				return true;
+			}
+			
+			if(root.left == null && root.right == null){
+			    return true;
+			}
+			
+			if(root.left != null && root.val <= root.left.val){
+				return false;
+			}
+			if(root.right != null && root.val >= root.right.val){
+				return false;
+			}
+			
+			
+			boolean left = isValidBST(root.left);
+			boolean right = isValidBST(root.right);
+			
+			return left && right;
+			
+		}
 
 	/**
-	 * 7.求二叉树中 LCA 最近公共祖先 - 没有父亲节点的信息 Lowest Common Ancestor 求二叉树中的两个节点的最近公共祖先 The
+	 * 7.求二叉树中 LCA 最近公共祖先 - a). 没有父亲节点的信息 Lowest Common Ancestor 求二叉树中的两个节点的最近公共祖先 The
 	 * lowest common ancestor is the node with largest depth which is the
 	 * ancestor of both nodes. 在root为根的二叉树中找A,B的LCA: 如果找到了就返回这个LCA 如果只碰到A，就返回A
 	 * 如果只碰到B，就返回B 如果都没有，就返回null 时间 O(h) 空间 O(h) 递归栈空间 ??????
@@ -697,7 +732,7 @@ public class TreeConclusion {
 	}
 
 	/**
-	 * 求二叉树中 LCA 最近公共祖先 - 有父亲节点的信息 Lowest Common Ancestor II
+	 * 求二叉树中 LCA 最近公共祖先 - b) 有父亲节点的信息 Lowest Common Ancestor II
 	 * 那么只需要记录A到root的path和B到root的path， 然后逐一进行比较
 	 */
 	class ParentTreeNode {
@@ -729,7 +764,7 @@ public class TreeConclusion {
 
 	/**
 	 * 求BST中 LCA 最近公共祖先
-	 * 遍历树的时候，如果当前结点大于两个节点，则结果在当前结点的左子树里，如果当前结点小于两个节点，则结果在当前节点的右子树里。
+	 * c) 遍历树的时候，如果当前结点大于两个节点，则结果在当前结点的左子树里，如果当前结点小于两个节点，则结果在当前节点的右子树里。
 	 * 
 	 * @param args
 	 */
@@ -743,6 +778,53 @@ public class TreeConclusion {
 		}
 		return root;
 	}
+	/**
+	 * d) 由LCA问题可以引出一个新问题：找到Binary Tree中的两点距离。Find distance between two given keys of a Binary Tree
+	 * The distance between two nodes can be obtained in terms of lowest common ancestor.
+	 * Dist(n1, n2) = Dist(root, n1) + Dist(root, n2) - 2*Dist(root, lca) 
+	 * http://www.geeksforgeeks.org/find-distance-two-given-nodes/
+	 */
+	public int FindTwoNodeDist( TreeNode root, TreeNode p, TreeNode q){
+		
+		TreeNode lca = findLCA(root, p, q);
+		int distP = findPath(root, p);
+		int distQ = findPath(root, q);
+		int distLCA = findPath(root, lca);
+		
+		return distP + distQ - 2*distLCA;
+	}
+	public TreeNode findLCA(TreeNode root, TreeNode p, TreeNode q){
+		
+		if(root == null || p == root || q == root){
+			return root;
+		}
+		TreeNode left = findLCA(root.left, p, q);
+		TreeNode right  = findLCA(root.right, p, q);
+		
+		if(left == null && right == null){
+			return root;
+		}
+		if(left != null){
+			return left;
+		}
+		if(right != null){
+			return right;
+		}
+		return null;
+	}
+	//找到binary tree任一点到root的距离。http://algorithms.tutorialhorizon.com/find-the-distance-from-root-to-given-node-of-a-binary-tree/
+	public int findPath(TreeNode root, TreeNode p){
+		if(root != null){
+			int x = 0;
+			if(root.val == p.val ||( x = findPath(root.left, p)) > 0 ||( x = findPath(root.right, p) ) > 0 ){
+				return x + 1;
+			}
+			return 0;
+		}
+		return 0;
+		
+	}
+	
 
 	/**
 	 * 8.求两棵树是不是same Tree/identical Tree
@@ -1184,7 +1266,7 @@ public class TreeConclusion {
 	}
 	/**
 	 * 12. a)由前序遍历序列和中序遍历序列重建二叉树
-	 * Given preorder and inorder traversal of a tree, construct the binary tree.
+	 * Given Pre-order and In-order traversal of a tree, construct the binary tree.
 	 * We assume that there is no duplicate in the trees.
      *  For example:
      *          1
@@ -1199,7 +1281,7 @@ public class TreeConclusion {
      *                      根   左子树    右子树  
      *  InOrder should be:  4 2 5   1   3 7 6 8
      *                       左子树  根  右子树
-	 * 从PreOrder来确定根，再从中序遍历来将序列分成左右子树。进行递归。算法最终相当于一次树的遍历，每个结点只会被访问一次，所以时间复杂度是O(n)。
+	 * 最重要的一点：先序遍历可以提供根的所在，而根据中序遍历的性质可以知道根的所在就可以将序列分成左右子树。 从PreOrder来确定根，再从中序遍历来将序列分成左右子树。进行递归。算法最终相当于一次树的遍历，每个结点只会被访问一次，所以时间复杂度是O(n)。
 		http://blog.csdn.net/linhuanmars/article/details/24389549	
 	 */
 	 public TreeNode buildTreeFromInPre(int[] preorder, int[] inorder) {
@@ -1221,6 +1303,7 @@ public class TreeConclusion {
 		 }
 		 TreeNode root = new TreeNode(preorder[preL]);	 
 		 int index = map.get(root.val);
+		 //相当于再找对应的区间。 2 4 5对应于  4 2 5, index - inL可以看做是找到的新中点距离分割起点的距离。
 		 root.left = helperFromInPre(preorder, preL + 1, preL + index - inL, inorder, inL, index - 1, map);
 		 root.right = helperFromInPre(preorder, preL + index - inL + 1,preR, inorder, index + 1, inR, map);
 		 return root;
@@ -1229,7 +1312,7 @@ public class TreeConclusion {
 	 
 	 /**
 		 * 12. b) 由后序遍历序列和中序遍历序列重建二叉树
-		 * Given postorder and  traversal of a tree, construct the binary tree.
+		 * Given Post-order and In-order traversal of a tree, construct the binary tree.
 		 * We assume that there is no duplicate in the trees.
 	      * We assume that there is no duplicate in the trees.
 	     *  For example:
@@ -1561,6 +1644,81 @@ public class TreeConclusion {
 		    		return node;
 		    	}
 	
+		    }
+		    /**
+		     *  17. Flatten Binary Tree to Linked List
+		     *  这道题就是使用先序遍历，遍历到的值作为新的右孩子存起来，左孩子变为空。注意的是，因为右孩子会更新，所以为了递归右子树，要在更新之前提前保存右孩子。
+		     *  整个程序需要维护一个全局变量，保存当前所遍历的节点。
+		     */
+		    
+		    TreeNode lastVistied = null;
+		    
+		    public void flatten(TreeNode root){
+		    	if(root == null){
+		    		return;
+		    	}
+		    	TreeNode realright = root.right;
+		    	
+		    	if(lastVistied != null){
+		    		lastVistied.left = null;
+		    		lastVistied.right = root;
+		    	}
+		    	
+		    	lastVistied = root;
+		    	flatten(root.left);
+		    	flatten(realright);
+		    }
+		    
+		    
+		    /**
+		     * 18.Binary Tree Inorder Successor. 二叉树查找树中序后继
+				a)有root 没有parent属性
+		     */
+		    
+		    public TreeNode inorderSuccessor(TreeNode root, TreeNode p) {
+		      if(root == null || p == null){
+		    	  return root;
+		      }
+		      // case 1: if p has right node, find the min of the right children.
+		      if(p.right != null){
+		    	 TreeNode cur = p.right;
+		    	 while(cur.left != null){
+		    		 cur = cur.left;
+		    	 }
+		    	 return cur;
+		      }
+		      // case 2: if p doesn't has right node, find p's ancestor, make sure p is ancestor's left node
+		      TreeNode successor = null;
+		      TreeNode ancessor = root;
+		      while(ancessor != p){
+		    	  if(p.val < ancessor.val){
+		    		  successor = ancessor;
+		    		  ancessor = ancessor.left;
+		    	  }else{
+		    		  ancessor = ancessor.right;
+		    	  }
+		      }
+		      return successor;
+			  
+		    }
+		    /**
+		     * 18. b)有parent，只要找parent中比p大的值大的点就行。
+		     */
+		    public TreeNode inorderSuccesorWithParent(TreeNode root, TreeNode p){
+		    	if(root == null || p == null){
+		    		return root;
+		    	}
+		    	
+		    	// case 1: if p has right node, find the min in right children
+		    	if(p.right != null){
+		    		return findMin(p.right);
+		    	}
+		    	// case 2: if p doesn't has right node, find p's ancessor, make sure p is ancessor's left node
+		    	TreeNode successor = p.parent;
+		    	while(successor != null && successor.val < p.val){
+		    		successor = succesor.parent;
+		    	}
+		    	return sucessor;
 		    }
 		    
 }
